@@ -9,4 +9,9 @@ export interface ShoppingItem {
 
 export interface ShoppingList {
   items: ShoppingItem[];
-} 
+}
+
+export type RootStackParamList = {
+  Home: undefined;
+  ItemDetails: { item?: ShoppingItem };
+};

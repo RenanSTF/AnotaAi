@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ShoppingItem as ShoppingItemType } from '../types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
 import { loadShoppingList, updateItem, deleteItem } from '../utils/storage';
 
 export default function CompletedItemsScreen() {
   const [items, setItems] = useState<ShoppingItemType[]>([]);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
 
   useEffect(() => {
     loadItems();

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ShoppingItem as ShoppingItemType } from '../types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
 import { loadShoppingList, updateItem, deleteItem } from '../utils/storage';
 import {
@@ -13,9 +14,11 @@ import {
   EmptyText,
 } from '../styles/global';
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
 export default function PendingItemsScreen() {
   const [items, setItems] = useState<ShoppingItemType[]>([]);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     loadItems();
@@ -55,14 +58,14 @@ export default function PendingItemsScreen() {
         data={items}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        contentContainerStyle={ListContainer}
+        contentContainerStyle={{ padding: 8 }}
       />
       {items.length === 0 && (
         <EmptyContainer>
           <EmptyText>Nenhum item pendente</EmptyText>
         </EmptyContainer>
       )}
-      <Button onPress={() => navigation.navigate('ItemDetails')}>
+      <Button onPress={() => navigation.navigate('ItemDetails', {})}>
         <ButtonText>+ Adicionar Item</ButtonText>
       </Button>
     </Container>

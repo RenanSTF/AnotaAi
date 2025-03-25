@@ -16,8 +16,8 @@ import {
 export default function ItemDetailsScreen() {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('1');
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const item = route.params?.item as ShoppingItemType | undefined;
 
   useEffect(() => {
