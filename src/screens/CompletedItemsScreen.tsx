@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
@@ -10,19 +10,30 @@ export default function CompletedItemsScreen() {
   const [items, setItems] = useState<ShoppingItemType[]>([]);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
 
-  useEffect(() => {
-    loadItems();
-  }, []);
-
   const loadItems = async () => {
     const list = await loadShoppingList();
     setItems(list.items.filter(item => item.completed));
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      loadItems();
+    }, [])
+  );
+
   const handleToggleComplete = async (item: ShoppingItemType) => {
-    const updatedItem = { ...item, completed: !item.completed };
-    await updateItem(updatedItem);
-    loadItems();
+    try {
+      const updatedItem = { 
+        ...item, 
+        completed: !item.completed,
+        updatedAt: new Date()
+      };
+      await updateItem(updatedItem);
+      await loadItems(); // Recarrega a lista após atualizar
+    } catch (error) {
+      console.error('Erro ao atualizar item:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar o item');
+    }
   };
 
   const handleDeleteItem = async (item: ShoppingItemType) => {
@@ -31,7 +42,10 @@ export default function CompletedItemsScreen() {
   };
 
   const handlePressItem = (item: ShoppingItemType) => {
-    navigation.navigate('ItemDetails', { item });
+    navigation.navigate('ItemDetails', { 
+      item,
+      onItemSaved: loadItems
+    });
   };
 
   const handleClearList = () => {

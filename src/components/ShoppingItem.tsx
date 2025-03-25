@@ -54,11 +54,15 @@ export const ShoppingItem: React.FC<ShoppingItemProps> = ({
   onPress,
   onToggleComplete,
 }) => {
+  const handleToggle = () => {
+    onToggleComplete(item);
+  };
+
   return (
     <ItemContainer completed={item.completed} onPress={() => onPress(item)}>
       <Checkbox
         checked={item.completed}
-        onPress={() => onToggleComplete(item)}
+        onPress={handleToggle}
       />
       <Content>
         <ItemName completed={item.completed}>{item.name}</ItemName>

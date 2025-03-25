@@ -45,7 +45,7 @@ export const loadShoppingList = async (): Promise<ShoppingList> => {
 export const addItem = async (item: ShoppingItem): Promise<void> => {
   try {
     const list = await loadShoppingList();
-    list.items.push(item);
+    list.items.push(serializeItem(item));
     await saveShoppingList(list);
   } catch (error) {
     console.error('Erro ao adicionar item:', error);
@@ -57,7 +57,7 @@ export const updateItem = async (updatedItem: ShoppingItem): Promise<void> => {
     const list = await loadShoppingList();
     const index = list.items.findIndex(item => item.id === updatedItem.id);
     if (index !== -1) {
-      list.items[index] = updatedItem;
+      list.items[index] = serializeItem(updatedItem);
       await saveShoppingList(list);
     }
   } catch (error) {
