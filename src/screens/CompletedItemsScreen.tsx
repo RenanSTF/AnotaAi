@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
-import { loadShoppingList, updateItem, deleteItem } from '../utils/storage';
+import { loadShoppingList, updateItem, deleteItem, clearList, addItem } from '../utils/storage';
 
 export default function CompletedItemsScreen() {
   const [items, setItems] = useState<ShoppingItemType[]>([]);
@@ -34,6 +34,25 @@ export default function CompletedItemsScreen() {
     navigation.navigate('ItemDetails', { item });
   };
 
+  const handleClearList = () => {
+    Alert.alert(
+      'Limpar Lista Concluída',
+      'Tem certeza que deseja limpar todos os itens concluídos?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Limpar',
+          style: 'destructive',
+          onPress: async () => {
+            await clearList(true);
+            loadItems();
+            Alert.alert('Sucesso', 'Lista de itens concluídos limpa com sucesso!');
+          },
+        },
+      ]
+    );
+  };
+
   const renderItem = ({ item }: { item: ShoppingItemType }) => (
     <ShoppingItem
       item={item}
@@ -54,6 +73,11 @@ export default function CompletedItemsScreen() {
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Nenhum item concluído</Text>
         </View>
+      )}
+      {items.length > 0 && (
+        <TouchableOpacity style={styles.deleteButton} onPress={handleClearList}>
+          <Text style={styles.deleteButtonText}>Limpar Lista Concluída</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -77,5 +101,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  deleteButton: {
+    backgroundColor: '#ff3b30',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    margin: 8,
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 }); 

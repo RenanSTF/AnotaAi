@@ -2,9 +2,10 @@ export interface ShoppingItem {
   id: string;
   name: string;
   quantity: number;
+  price: number;
   completed: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 export interface ShoppingList {
@@ -13,5 +14,8 @@ export interface ShoppingList {
 
 export type RootStackParamList = {
   Home: undefined;
-  ItemDetails: { item?: ShoppingItem };
+  ItemDetails: { 
+    item?: ShoppingItem;
+    onItemSaved?: () => void;
+  };
 };

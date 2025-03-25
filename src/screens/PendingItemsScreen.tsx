@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
-import { loadShoppingList, updateItem, deleteItem } from '../utils/storage';
+import { loadShoppingList, updateItem, deleteItem, clearList, addItem } from '../utils/storage';
 import {
   Container,
   ListContainer,
@@ -12,6 +12,7 @@ import {
   ButtonText,
   EmptyContainer,
   EmptyText,
+  DeleteButton,
 } from '../styles/global';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -41,7 +42,29 @@ export default function PendingItemsScreen() {
   };
 
   const handlePressItem = (item: ShoppingItemType) => {
-    navigation.navigate('ItemDetails', { item });
+    navigation.navigate('ItemDetails', { 
+      item,
+      onItemSaved: loadItems
+    });
+  };
+
+  const handleClearList = () => {
+    Alert.alert(
+      'Limpar Lista Pendente',
+      'Tem certeza que deseja limpar todos os itens pendentes?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Limpar',
+          style: 'destructive',
+          onPress: async () => {
+            await clearList(false);
+            loadItems();
+            Alert.alert('Sucesso', 'Lista de itens pendentes limpa com sucesso!');
+          },
+        },
+      ]
+    );
   };
 
   const renderItem = ({ item }: { item: ShoppingItemType }) => (
@@ -65,9 +88,16 @@ export default function PendingItemsScreen() {
           <EmptyText>Nenhum item pendente</EmptyText>
         </EmptyContainer>
       )}
-      <Button onPress={() => navigation.navigate('ItemDetails', {})}>
+      <Button onPress={() => navigation.navigate('ItemDetails', { 
+        onItemSaved: loadItems 
+      })}>
         <ButtonText>+ Adicionar Item</ButtonText>
       </Button>
+      {items.length > 0 && (
+        <DeleteButton onPress={handleClearList}>
+          <ButtonText>Limpar Lista Pendente</ButtonText>
+        </DeleteButton>
+      )}
     </Container>
   );
 } 

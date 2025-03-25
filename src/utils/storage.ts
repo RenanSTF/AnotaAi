@@ -3,9 +3,24 @@ import { ShoppingList, ShoppingItem } from '../types';
 
 const STORAGE_KEY = '@anotaai:shopping_list';
 
+const serializeItem = (item: ShoppingItem): ShoppingItem => ({
+  ...item,
+  createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : item.createdAt,
+  updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : item.updatedAt,
+});
+
+const deserializeItem = (item: ShoppingItem): ShoppingItem => ({
+  ...item,
+  createdAt: new Date(item.createdAt),
+  updatedAt: new Date(item.updatedAt),
+});
+
 export const saveShoppingList = async (list: ShoppingList): Promise<void> => {
   try {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    const serializedList = {
+      items: list.items.map(serializeItem),
+    };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(serializedList));
   } catch (error) {
     console.error('Erro ao salvar lista:', error);
   }
@@ -15,7 +30,10 @@ export const loadShoppingList = async (): Promise<ShoppingList> => {
   try {
     const data = await AsyncStorage.getItem(STORAGE_KEY);
     if (data) {
-      return JSON.parse(data);
+      const parsedData = JSON.parse(data);
+      return {
+        items: parsedData.items.map(deserializeItem),
+      };
     }
     return { items: [] };
   } catch (error) {
@@ -57,9 +75,11 @@ export const deleteItem = async (itemId: string): Promise<void> => {
   }
 };
 
-export const clearList = async (): Promise<void> => {
+export const clearList = async (clearCompleted: boolean = false): Promise<void> => {
   try {
-    await AsyncStorage.removeItem(STORAGE_KEY);
+    const list = await loadShoppingList();
+    list.items = list.items.filter(item => item.completed !== clearCompleted);
+    await saveShoppingList(list);
   } catch (error) {
     console.error('Erro ao limpar lista:', error);
   }

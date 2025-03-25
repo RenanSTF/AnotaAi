@@ -16,14 +16,17 @@ import {
 export default function ItemDetailsScreen() {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('1');
+  const [price, setPrice] = useState('0');
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const item = route.params?.item as ShoppingItemType | undefined;
+  const onItemSaved = route.params?.onItemSaved;
 
   useEffect(() => {
     if (item) {
       setName(item.name);
       setQuantity(item.quantity.toString());
+      setPrice(item.price.toString());
     }
   }, [item]);
 
@@ -39,12 +42,19 @@ export default function ItemDetailsScreen() {
       return;
     }
 
+    const priceNum = parseFloat(price);
+    if (isNaN(priceNum) || priceNum < 0) {
+      Alert.alert('Erro', 'O preço deve ser um número não negativo');
+      return;
+    }
+
     const newItem: ShoppingItemType = {
       id: item?.id || Date.now().toString(),
       name: name.trim(),
       quantity: quantityNum,
+      price: priceNum,
       completed: item?.completed || false,
-      createdAt: item?.createdAt || new Date(),
+      createdAt: item?.createdAt ? new Date(item.createdAt) : new Date(),
       updatedAt: new Date(),
     };
 
@@ -52,6 +62,10 @@ export default function ItemDetailsScreen() {
       await updateItem(newItem);
     } else {
       await addItem(newItem);
+    }
+
+    if (onItemSaved) {
+      onItemSaved();
     }
 
     navigation.goBack();
@@ -70,6 +84,9 @@ export default function ItemDetailsScreen() {
           style: 'destructive',
           onPress: async () => {
             await deleteItem(item.id);
+            if (onItemSaved) {
+              onItemSaved();
+            }
             navigation.goBack();
           },
         },
@@ -93,6 +110,14 @@ export default function ItemDetailsScreen() {
           onChangeText={setQuantity}
           keyboardType="numeric"
           placeholder="Digite a quantidade"
+        />
+
+        <Label>Preço</Label>
+        <Input
+          value={price}
+          onChangeText={setPrice}
+          keyboardType="numeric"
+          placeholder="Digite o preço"
         />
 
         <Button onPress={handleSave}>
