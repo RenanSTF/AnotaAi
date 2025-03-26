@@ -21,32 +21,6 @@ const deserializeItem = (item: any): ShoppingItem => ({
   updatedAt: new Date(item.updatedat),
 });
 
-export const saveShoppingList = async (list: ShoppingList): Promise<void> => {
-  try {
-    const { error } = await supabase
-      .from(TABLE_NAME)
-      .upsert(
-        list.items.map(item => ({
-          id: item.id,
-          name: item.name,
-          quantity: item.quantity,
-          completed: item.completed,
-          price: item.price,
-          createdat: item.createdAt instanceof Date ? item.createdAt.toISOString() : item.createdAt,
-          updatedat: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : item.updatedAt,
-        })),
-        { onConflict: 'id' }
-      );
-
-    if (error) {
-      throw error;
-    }
-  } catch (error) {
-    console.error('Erro ao salvar lista:', error);
-  }
-};
-
-
 export const loadShoppingList = async (): Promise<ShoppingList> => {
   try {
     const { data, error } = await supabase
@@ -64,7 +38,7 @@ export const loadShoppingList = async (): Promise<ShoppingList> => {
         quantity: item.quantity,
         completed: item.completed,
         createdAt: new Date(item.createdat),
-        updatedAt: new Date(item.updatedat),
+        updatedAt: new Date(item.updatedat),  // Mantém updatedAt do Supabase
         price: item.price,
       })) : [],
     };
@@ -85,7 +59,6 @@ export const addItem = async (item: ShoppingItem): Promise<void> => {
         completed: item.completed,
         price: item.price,
         createdat: item.createdAt instanceof Date ? item.createdAt.toISOString() : item.createdAt,
-        updatedat: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : item.updatedAt,
       });
 
     if (error) {
@@ -107,7 +80,6 @@ export const updateItem = async (updatedItem: ShoppingItem): Promise<void> => {
         completed: updatedItem.completed,
         price: updatedItem.price,
         createdat: updatedItem.createdAt instanceof Date ? updatedItem.createdAt.toISOString() : updatedItem.createdAt,
-        updatedat: updatedItem.updatedAt instanceof Date ? updatedItem.updatedAt.toISOString() : updatedItem.updatedAt,
       })
       .eq('id', updatedItem.id);
 
@@ -148,3 +120,5 @@ export const clearList = async (clearCompleted: boolean = false): Promise<void> 
     console.error('Erro ao limpar lista:', error);
   }
 };
+
+
