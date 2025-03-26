@@ -106,7 +106,8 @@ export const deleteItem = async (itemId: string): Promise<void> => {
   }
 };
 
-export const clearList = async (clearCompleted: boolean = false): Promise<void> => {
+export const clearList = async (clearCompleted: boolean): Promise<void> => {
+  console.log("passou")
   try {
     const { error } = await supabase
       .from(TABLE_NAME)

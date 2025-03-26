@@ -49,6 +49,7 @@ export default function CompletedItemsScreen() {
   };
 
   const handleClearList = () => {
+    console.log('Tentando limpar lista...');
     Alert.alert(
       'Limpar Lista Concluída',
       'Tem certeza que deseja limpar todos os itens concluídos?',
@@ -59,13 +60,15 @@ export default function CompletedItemsScreen() {
           style: 'destructive',
           onPress: async () => {
             await clearList(true);
-            loadItems();
+            await loadItems();
             Alert.alert('Sucesso', 'Lista de itens concluídos limpa com sucesso!');
           },
         },
       ]
     );
   };
+  
+  
 
   const renderItem = ({ item }: { item: ShoppingItemType }) => (
     <ShoppingItem
