@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ShoppingItem as ShoppingItemType } from '../types';
+import { ShoppingItem as ShoppingItemType } from '../types';f
 import { addItem, updateItem, deleteItem } from '../utils/storage';
 import {
   Container,
