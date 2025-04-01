@@ -1,10 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
+import { FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
 import { loadShoppingList, updateItem, deleteItem, clearList, addItem } from '../utils/storage';
+import {
+  Container,
+  Button,
+  ButtonText,
+  EmptyContainer,
+  EmptyText,
+  DeleteButton,
+} from '../styles/global';
+import styled from 'styled-components/native';
+
+const EmptyStateContainer = styled(EmptyContainer)`
+  padding: 32px;
+`;
+
+const EmptyStateIcon = styled.View`
+  margin-bottom: 16px;
+`;
+
+const ButtonContainer = styled.View`
+  padding: 16px;
+`;
 
 export default function CompletedItemsScreen() {
   const [items, setItems] = useState<ShoppingItemType[]>([]);
@@ -29,7 +51,7 @@ export default function CompletedItemsScreen() {
         updatedAt: new Date()
       };
       await updateItem(updatedItem);
-      await loadItems(); // Recarrega a lista após atualizar
+      await loadItems();
     } catch (error) {
       console.error('Erro ao atualizar item:', error);
       Alert.alert('Erro', 'Não foi possível atualizar o item');
@@ -76,56 +98,32 @@ export default function CompletedItemsScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <Container>
       <FlatList
         data={items}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ padding: 16 }}
+        showsVerticalScrollIndicator={false}
       />
+      
       {items.length === 0 && (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhum item concluído</Text>
-        </View>
+        <EmptyStateContainer>
+          <EmptyStateIcon>
+            <MaterialCommunityIcons name="cart-check" size={64} color="#B3B3B3" />
+          </EmptyStateIcon>
+          <EmptyText>Nenhum item concluído</EmptyText>
+          <EmptyText>Os itens marcados como concluídos aparecerão aqui</EmptyText>
+        </EmptyStateContainer>
       )}
+      
       {items.length > 0 && (
-        <TouchableOpacity style={styles.deleteButton} onPress={handleClearList}>
-          <Text style={styles.deleteButtonText}>Limpar Lista Concluída</Text>
-        </TouchableOpacity>
+        <ButtonContainer>
+          <DeleteButton onPress={handleClearList}>
+            <ButtonText>Limpar Lista Concluída</ButtonText>
+          </DeleteButton>
+        </ButtonContainer>
       )}
-    </View>
+    </Container>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
-  },
-  list: {
-    paddingVertical: 8,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
-  deleteButton: {
-    backgroundColor: '#ff3b30',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    margin: 8,
-  },
-  deleteButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-}); 
+} 
