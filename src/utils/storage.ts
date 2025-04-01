@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { ShoppingList, ShoppingItem } from '../types';
-import dotenv from 'dotenv';
-dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseAnonKey = process.env.SUPABASE_KEY as string;
+const supabaseUrl = 'https://lsutyjmahtfxqmjfqkpp.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzdXR5am1haHRmeHFtamZxa3BwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5NTM0NzgsImV4cCI6MjA1ODUyOTQ3OH0.ezQeuMsSEqvvERFEWMcnokmuWb5A1xND5OmPBNlB3Bk';
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -27,7 +25,7 @@ export const loadShoppingList = async (): Promise<ShoppingList> => {
         quantity: item.quantity,
         completed: item.completed,
         createdAt: new Date(item.createdat),
-        updatedAt: new Date(item.updatedat),
+        updatedAt: new Date(item.updatedat),  // Mantém updatedAt do Supabase
         price: item.price,
       })) : [],
     };
@@ -95,20 +93,33 @@ export const deleteItem = async (itemId: string): Promise<void> => {
   }
 };
 
-export const clearList = async (clearCompleted: boolean): Promise<void> => {
-  console.log("passou")
+export const clearCartList = async (): Promise<void> => {
   try {
     const { error } = await supabase
       .from(TABLE_NAME)
       .delete()
-      .eq('completed', clearCompleted);
+      .eq('completed', true); // Remove apenas os itens completos
 
     if (error) {
       throw error;
     }
   } catch (error) {
-    console.error('Erro ao limpar lista:', error);
+    console.error('Erro ao limpar lista de itens completos:', error);
   }
 };
 
+export const clearPendingList = async (): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .delete()
+      .eq('completed', false); // Remove apenas os itens pendentes
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error('Erro ao limpar lista de itens pendentes:', error);
+  }
+};
 
