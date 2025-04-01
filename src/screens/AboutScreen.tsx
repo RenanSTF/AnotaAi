@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import {
@@ -21,18 +21,16 @@ const LogoContainer = styled.View`
 `;
 
 const LogoBackground = styled.View`
-  width: 120px;
-  height: 120px;
-  background-color: #FFC107;
-  border-radius: 24px;
+  width: 180px;
+  height: 180px;
   justify-content: center;
   align-items: center;
   margin-bottom: 16px;
-  elevation: 8;
-  shadow-color: #000;
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.3;
-  shadow-radius: 8px;
+`;
+
+const CustomIcon = styled.Image`
+  width: 180px;
+  height: 180px;
 `;
 
 const AboutTitle = styled(Title)`
@@ -106,10 +104,9 @@ export default function AboutScreen() {
         <AboutCard>
           <LogoContainer>
             <LogoBackground>
-              <MaterialCommunityIcons
-                name="text-box-check-outline"
-                size={64}
-                color="#1E2A38"
+              <CustomIcon
+                source={require('../../assets/icon.png')}
+                resizeMode="contain"
               />
             </LogoBackground>
           </LogoContainer>
