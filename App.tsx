@@ -7,10 +7,9 @@ import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Importação das telas (serão criadas em seguida)
-import HomeScreen from './src/screens/HomeScreen';
 import ItemDetailsScreen from './src/screens/ItemDetailsScreen';
 import PendingItemsScreen from './src/screens/PendingItemsScreen';
-import CompletedItemsScreen from './src/screens/CompletedItemsScreen';
+import CartScreen from './src/screens/CartItemsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import AboutScreen from './src/screens/AboutScreen';
 
@@ -21,8 +20,8 @@ const Drawer = createDrawerNavigator();
 function TabNavigator() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Pendentes" component={PendingItemsScreen} />
-      <Tab.Screen name="Comprados" component={CompletedItemsScreen} />
+      <Tab.Screen name="Caixa" component={PendingItemsScreen} />
+      <Tab.Screen name="Cesta" component={CartScreen} />
     </Tab.Navigator>
   );
 }

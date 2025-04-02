@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ShoppingItem as ShoppingItemType } from '../types';
 import { addItem, updateItem, deleteItem } from '../utils/storage';
+
 import {
   Container,
   Card,
@@ -95,43 +96,55 @@ export default function ItemDetailsScreen() {
   };
 
   return (
-    <Container>
-      <Card>
-        <Label>Nome do Item</Label>
-        <Input
-          value={name}
-          onChangeText={setName}
-          placeholder="Digite o nome do item"
-        />
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <Container>
+            <Card>
+              <Label>Nome do Item</Label>
+              <Input
+                value={name}
+                onChangeText={setName}
+                placeholder="Digite o nome do item"
+                placeholderTextColor="#B3B3B3"
+              />
 
-        <Label>Quantidade</Label>
-        <Input
-          value={quantity}
-          onChangeText={setQuantity}
-          keyboardType="numeric"
-          placeholder="Digite a quantidade"
-        />
+              <Label>Quantidade</Label>
+              <Input
+                value={quantity}
+                onChangeText={setQuantity}
+                keyboardType="numeric"
+                placeholder="Digite a quantidade"
+                placeholderTextColor="#B3B3B3"
+              />
 
-        <Label>Preço</Label>
-        <Input
-          value={price}
-          onChangeText={setPrice}
-          keyboardType="numeric"
-          placeholder="Digite o preço"
-        />
+              <Label>Preço</Label>
+              <Input
+                value={price}
+                onChangeText={setPrice}
+                keyboardType="numeric"
+                placeholder="Digite o preço"
+                placeholderTextColor="#B3B3B3"
+              />
 
-        <Button onPress={handleSave}>
-          <ButtonText>
-            {item ? 'Atualizar' : 'Adicionar'} Item
-          </ButtonText>
-        </Button>
+              <Button onPress={handleSave} activeOpacity={0.8}>
+                <ButtonText>
+                  {item ? 'Atualizar' : 'Adicionar'} Item
+                </ButtonText>
+              </Button>
 
-        {item && (
-          <DeleteButton onPress={handleDelete}>
-            <ButtonText>Excluir Item</ButtonText>
-          </DeleteButton>
-        )}
-      </Card>
-    </Container>
+              {item && (
+                <DeleteButton onPress={handleDelete} activeOpacity={0.8}>
+                  <ButtonText>Excluir Item</ButtonText>
+                </DeleteButton>
+              )}
+            </Card>
+          </Container>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
-} 
+}

@@ -25,7 +25,7 @@ export default function AboutScreen() {
           <EmptyText>• Adicionar itens à sua lista</EmptyText>
           <EmptyText>• Marcar itens como comprados</EmptyText>
           <EmptyText>• Editar e remover itens</EmptyText>
-          <EmptyText>• Organizar itens em pendentes e concluídos</EmptyText>
+          <EmptyText>• Organizar itens em Caixa e concluídos</EmptyText>
           <EmptyText>• Limpar sua lista quando necessário</EmptyText>
 
           <Label style={{ marginTop: 24, textAlign: 'center' }}>

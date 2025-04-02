@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ShoppingItem as ShoppingItemType, RootStackParamList } from '../types';
 import { ShoppingItem } from '../components/ShoppingItem';
-import { loadShoppingList, updateItem, deleteItem, clearPendingList, addItem } from '../utils/storage';
+import { loadShoppingList, updateItem, deleteItem, clearCartList, addItem } from '../utils/storage';
 import {
   Container,
   ListContainer,
@@ -17,13 +17,13 @@ import {
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
-export default function PendingItemsScreen() {
+export default function CartScreen() {
   const [items, setItems] = useState<ShoppingItemType[]>([]);
   const navigation = useNavigation<NavigationProp>();
 
   const loadItems = async () => {
     const list = await loadShoppingList();
-    setItems(list.items.filter(item => !item.completed));
+    setItems(list.items.filter(item => item.completed));
   };
 
   useFocusEffect(
@@ -40,7 +40,7 @@ export default function PendingItemsScreen() {
         updatedAt: new Date()
       };
       await updateItem(updatedItem);
-      await loadItems(); // Recarrega a lista após atualizar
+      await loadItems();
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível atualizar o item');
     }
@@ -51,26 +51,19 @@ export default function PendingItemsScreen() {
     loadItems();
   };
 
-  const handlePressItem = (item: ShoppingItemType) => {
-    navigation.navigate('ItemDetails', { 
-      item,
-      onItemSaved: loadItems
-    });
-  };
-
-  const handleClearList = () => {
+  const handleClearCart = () => {
     Alert.alert(
-      'Limpar Lista Pendente',
-      'Tem certeza que deseja limpar todos os itens Caixa?',
+      'Esvaziar Cesta',
+      'Tem certeza que deseja remover todos os itens do Cesta?',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Limpar',
+          text: 'Esvaziar',
           style: 'destructive',
           onPress: async () => {
-            await clearPendingList();
+            await clearCartList();
             loadItems();
-            Alert.alert('Sucesso', 'Lista de itens Caixa limpa com sucesso!');
+            Alert.alert('Sucesso', 'Cesta esvaziado com sucesso!');
           },
         },
       ]
@@ -80,7 +73,7 @@ export default function PendingItemsScreen() {
   const renderItem = ({ item }: { item: ShoppingItemType }) => (
     <ShoppingItem
       item={item}
-      onPress={handlePressItem}
+      onPress={() => navigation.navigate('ItemDetails', { item, onItemSaved: loadItems })}
       onToggleComplete={handleToggleComplete}
     />
   );
@@ -95,19 +88,14 @@ export default function PendingItemsScreen() {
       />
       {items.length === 0 && (
         <EmptyContainer>
-          <EmptyText>Nenhum item pendente</EmptyText>
+          <EmptyText>O Cesta está vazio</EmptyText>
         </EmptyContainer>
       )}
-      <Button onPress={() => navigation.navigate('ItemDetails', { 
-        onItemSaved: loadItems 
-      })}>
-        <ButtonText>+ Adicionar Item</ButtonText>
-      </Button>
       {items.length > 0 && (
-        <DeleteButton onPress={handleClearList}>
-          <ButtonText>Limpar Caixa</ButtonText>
+        <DeleteButton onPress={handleClearCart}>
+          <ButtonText>Esvaziar Cesta</ButtonText>
         </DeleteButton>
       )}
     </Container>
   );
-} 
+}
